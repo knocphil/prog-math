@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programme de Mathématiques de 5ème</title>
+    <style>
+        /* Réinitialisation des marges et paddings par défaut */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            line-height: 1.4; /* Hauteur de ligne compacte */
+            font-size: 16px;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 10px auto; /* Espacement supérieur et inférieur réduit */
+            padding: 10px; /* Padding réduit */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .dropdown {
+            margin-bottom: 8px; /* Espacement réduit */
+        }
+
+        select, button {
+            padding: 5px 8px; /* Padding compact */
+            font-size: 14px; /* Taille de police légèrement réduite */
+            margin-right: 5px; /* Espacement réduit entre les boutons */
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #content-display {
+            width: 100%;
+            height: 400px;
+            padding: 8px; /* Padding réduit */
+            font-size: 14px; /* Taille de police légèrement réduite */
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+            margin-top: 8px; /* Espacement réduit */
+            overflow-y: auto; /* Barre de défilement verticale */
+            white-space: pre-wrap;
+        }
+
+        .separator {
+            border-top: 1px solid #eee;
+            margin: 8px 0; /* Espacement réduit */
+        }
+
+        .exercice {
+            color: #000;
+            margin-bottom: 8px; /* Espacement réduit */
+        }
+
+        .exercice-complex {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 8px; /* Espacement réduit */
+        }
+
+        /* Styles pour les cours */
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 3px; /* Padding réduit */
+            margin-bottom: 10px; /* Espacement réduit */
+            font-size: 20px; /* Taille de police ajustée */
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 10px; /* Espacement réduit */
+            margin-bottom: 5px; /* Espacement réduit */
+            font-size: 18px; /* Taille de police ajustée */
+        }
+
+        h4 {
+            color: #34495e;
+            margin-top: 6px; /* Espacement réduit */
+            margin-bottom: 3px; /* Espacement réduit */
+            font-size: 16px; /* Taille de police ajustée */
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 8px; /* Espacement réduit */
+        }
+
+        ul {
+            margin-left: 18px; /* Indentation réduite */
+            margin-bottom: 8px; /* Espacement réduit */
+            list-style-type: disc;
+        }
+
+        li {
+            margin-bottom: 4px; /* Espacement réduit */
+            font-weight: bold; /* Puces en gras */
+        }
+
+        /* Listes imbriquées */
+        ul ul {
+            margin-left: 15px; /* Indentation réduite pour les sous-listes */
+            list-style-type: circle;
+        }
+
+        /* Réduction des espaces entre les textes des cours */
+        /* Appliqué uniquement lorsque #content-display a la classe 'cours' */
+        #content-display.cours h2 {
+            margin-bottom: 5px;
+        }
+
+        #content-display.cours h3 {
+            margin-top: 5px;
+            margin-bottom: 2px;
+        }
+
+        #content-display.cours h4 {
+            margin-top: 3px;
+            margin-bottom: 1px;
+        }
+
+        #content-display.cours p {
+            margin-bottom: 4px;
+        }
+
+        #content-display.cours ul {
+            margin-bottom: 4px;
+        }
+
+        #content-display.cours li {
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dropdown">
+            <select id="chapter-select">
+                <option value="">Sélectionnez un chapitre</option>
+                <option value="1">Nombres relatifs</option>
+                <option value="2">Fractions</option>
+                <option value="3">Calcul littéral</option>
+                <option value="4">Géométrie</option>
+                <option value="5">Proportionnalité</option>
+                <option value="6">Statistiques et probabilités</option>
+            </select>
+        </div>
+        <button id="cours-button" disabled>Cours</button>
+        <button id="exercices-button" disabled>Exercices</button>
+        <div id="content-display"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chapterSelect = document.getElementById('chapter-select');
+            const coursButton = document.getElementById('cours-button');
+            const exercicesButton = document.getElementById('exercices-button');
+            const contentDisplay = document.getElementById('content-display');
+
+            function showCours(coursHTML) {
+                contentDisplay.innerHTML = coursHTML;
+                contentDisplay.classList.add('cours');
+            }
+
+            function showExercices(simpleExercises, complexExercises) {
+                let htmlContent = '';
+
+                // Ajouter les exercices simples
+                simpleExercises.forEach(ex => {
+                    htmlContent += `<div class="exercice">${ex}</div><div class="separator"></div>`;
+                });
+
+                // Ajouter les exercices complexes
+                complexExercises.forEach(ex => {
+                    htmlContent += `<div class="exercice-complex">${ex}</div><div class="separator"></div>`;
+                });
+
+                contentDisplay.innerHTML = htmlContent;
+                contentDisplay.classList.remove('cours');
+            }
+
+            function handleSelectionChange() {
+                const selectedChapter = chapterSelect.value;
+                coursButton.disabled = !selectedChapter;
+                exercicesButton.disabled = !selectedChapter;
+
+                // Vider la zone de texte
+                contentDisplay.innerHTML = '';
+                contentDisplay.classList.remove('cours');
+            }
+
+            function handleCoursButtonClick() {
+                const selectedChapter = chapterSelect.value;
+                let coursHTML = '';
+
+                switch (selectedChapter) {
+                    case "1":
+                        coursHTML = `
+                            <h2>Nombres Relatifs</h2>
+                            <h3>Introduction</h3>
+                            <p>Les nombres relatifs incluent les nombres positifs, négatifs et le zéro. Ils permettent de représenter des situations de gains et pertes, comme les températures ou les finances.</p>
+                            <h3>Utilisations des Nombres Relatifs</h3>
+                            <ul>
+                                <li>Gestion de température : Exemples comme -5°C (froid) et +25°C (chaud).</li>
+                                <li>Comptabilité : Représentation des profits (+500 euros) et des pertes (-300 euros).</li>
+                                <li>Géographie : Altitude au-dessus (+) ou en dessous (-) du niveau de la mer.</li>
+                            </ul>
+                            <h3>Opérations sur les Nombres Relatifs</h3>
+                            <ul>
+                                <li>Addition : Additionner deux nombres relatifs en tenant compte de leur signe. Par exemple, (-3) + (+5) = +2.</li>
+                                <li>Soustraction : Soustraire un nombre relatif revient à ajouter son opposé. Par exemple, 5 - (-2) = 7.</li>
+                                <li>Multiplication : Le produit de deux signes identiques est positif, et différent est négatif. Par exemple, (-4) × (+5) = -20.</li>
+                                <li>Division : Similaire à la multiplication. Par exemple, (-10) ÷ (-2) = +5.</li>
+                            </ul>
+                            <h3>Propriétés des Nombres Relatifs</h3>
+                            <ul>
+                                <li>Commutativité : a + b = b + a et a × b = b × a.</li>
+                                <li>Associativité : (a + b) + c = a + (b + c) et (a × b) × c = a × (b × c).</li>
+                                <li>Distributivité : a × (b + c) = (a × b) + (a × c).</li>
+                            </ul>
+                        `;
+                        break;
+                    case "2":
+                        coursHTML = `
+                            <h2>Fractions</h2>
+                            <h3>Introduction aux Fractions</h3>
+                            <p>Les fractions représentent une partie d'un tout et sont composées d'un numérateur (partie supérieure) et d'un dénominateur (partie inférieure).</p>
+                            <h3>Types de Fractions</h3>
+                            <ul>
+                                <li>Fraction propre : Numérateur &lt; dénominateur, comme 3/4.</li>
+                                <li>Fraction impropre : Numérateur ≥ dénominateur, comme 5/3.</li>
+                                <li>Fraction équivalente : Différentes fractions qui représentent la même quantité, comme 1/2 et 2/4.</li>
+                            </ul>
+                            <h3>Simplification des Fractions</h3>
+                            <p>Pour simplifier une fraction, divisez le numérateur et le dénominateur par leur Plus Grand Commun Diviseur (PGCD).</p>
+                            <h3>Opérations sur les Fractions</h3>
+                            <ul>
+                                <li>Addition : Avoir le même dénominateur, puis additionner les numérateurs. Exemple : 3/4 + 2/4 = 5/4.</li>
+                                <li>Soustraction : Avoir le même dénominateur, puis soustraire les numérateurs. Exemple : 5/6 - 1/3 = 1/2.</li>
+                                <li>Multiplication : Multiplier les numérateurs entre eux et les dénominateurs entre eux. Exemple : (4/5) × (10/3) = 40/15 = 8/3.</li>
+                                <li>Division : Multiplier par l'inverse de la fraction. Exemple : (7/9) ÷ (2/3) = (7/9) × (3/2) = 21/18 = 7/6.</li>
+                            </ul>
+                            <h3>Conversion</h3>
+                            <ul>
+                                <li>En décimal : Divisez le numérateur par le dénominateur. Exemple : 5/8 = 0,625.</li>
+                                <li>En pourcentage : Multipliez la fraction par 100. Exemple : 7/12 ≈ 58,33%.</li>
+                            </ul>
+                        `;
+                        break;
+                    case "3":
+                        coursHTML = `
+                            <h2>Calcul Littéral</h2>
+                            <h3>Introduction</h3>
+                            <p>Le calcul littéral utilise des lettres (variables) pour représenter des nombres inconnus ou variables, facilitant ainsi la résolution d'équations et la simplification d'expressions.</p>
+                            <h3>Expressions Littérales</h3>
+                            <ul>
+                                <li>Définition : Une expression comme 3x + 5 où x est une variable.</li>
+                                <li>Exemple : 2(y - 4) + 3 = 2y - 8 + 3 = 2y - 5.</li>
+                            </ul>
+                            <h3>Réduction et Développement</h3>
+                            <ul>
+                                <li>Réduction : Simplifier les expressions en regroupant les termes semblables. Exemple : 3x + 2x = 5x.</li>
+                                <li>Développement : Enlever les parenthèses en distribuant. Exemple : 2(x + 3) = 2x + 6.</li>
+                            </ul>
+                            <h3>Résolution d'Équations</h3>
+                            <ul>
+                                <li>Définition : Une équation est une égalité entre deux expressions. Exemple : 3x = 9.</li>
+                                <li>Méthode : Isoler la variable en effectuant des opérations inverses. Exemple : x = 9 / 3 = 3.</li>
+                            </ul>
+                            <h3>Propriétés Utiles</h3>
+                            <ul>
+                                <li>Commutativité : a + b = b + a et a × b = b × a.</li>
+                                <li>Associativité : (a + b) + c = a + (b + c) et (a × b) × c = a × (b × c).</li>
+                                <li>Distributivité : a × (b + c) = (a × b) + (a × c).</li>
+                            </ul>
+                        `;
+                        break;
+                    case "4":
+                        coursHTML = `
+                            <h2>Géométrie</h2>
+                            <h3>Introduction</h3>
+                            <p>La géométrie étudie les formes, les tailles, les positions relatives des figures, et les propriétés de l'espace. Elle est essentielle pour comprendre et résoudre des problèmes liés aux figures et aux volumes.</p>
+                            <h3>Droites Parallèles et Perpendiculaires</h3>
+                            <ul>
+                                <li>Parallèles : Les droites parallèles ne se croisent jamais, peu importe leur longueur.</li>
+                                <li>Perpendiculaires : Les droites perpendiculaires se croisent en formant un angle droit (90°).</li>
+                            </ul>
+                            <h3>Figures Géométriques</h3>
+                            <ul>
+                                <li>Triangles :
+                                    <ul>
+                                        <li>Équilatéral : Trois côtés égaux.</li>
+                                        <li>Isocèle : Deux côtés égaux.</li>
+                                        <li>Scalène : Tous les côtés de longueurs différentes.</li>
+                                    </ul>
+                                </li>
+                                <li>Quadrilatères :
+                                    <ul>
+                                        <li>Carré : Quatre côtés égaux et quatre angles droits.</li>
+                                        <li>Rectangle : Quatre angles droits et côtés opposés égaux.</li>
+                                        <li>Trapèze : Deux côtés parallèles.</li>
+                                    </ul>
+                                </li>
+                                <li>Cercles :
+                                    <ul>
+                                        <li>Rayon : Distance du centre au bord du cercle.</li>
+                                        <li>Diamètre : Distance d'un bord à l'autre en passant par le centre (2 × rayon).</li>
+                                        <li>Circonférence : Périmètre du cercle.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <h3>Symétrie</h3>
+                            <ul>
+                                <li>Symétrie Axiale : Une figure est symétrique par rapport à un axe si une partie est le miroir de l'autre par rapport à cet axe.</li>
+                                <li>Symétrie Centrale : Une figure est symétrique par rapport à un point si chaque point de la figure a un point opposé par rapport à ce centre.</li>
+                            </ul>
+                            <h3>Mesures en Géométrie</h3>
+                            <ul>
+                                <li>Aire : Mesure de la surface d'une figure plane.</li>
+                                <li>Périmètre : Mesure de la longueur totale des côtés d'une figure plane.</li>
+                                <li>Volume : Mesure de l'espace occupé par un objet tridimensionnel.</li>
+                            </ul>
+                        `;
+                        break;
+                    case "5":
+                        coursHTML = `
+                            <h2>Proportionnalité</h2>
+                            <h3>Introduction</h3>
+                            <p>La proportionnalité est une relation entre deux grandeurs qui varient de manière constante. Elle est fondamentale pour résoudre des problèmes impliquant des ratios et des échelles.</p>
+                            <h3>Proportionnalité Directe</h3>
+                            <ul>
+                                <li>Définition : Deux grandeurs sont proportionnelles directement si leur rapport est constant.</li>
+                                <li>Exemple : Le prix est proportionnel à la quantité achetée. Si le prix par unité est de 3 €, alors pour 5 unités, le prix est 15 €.</li>
+                            </ul>
+                            <h3>Coefficient de Proportionnalité</h3>
+                            <ul>
+                                <li>Définition : C'est le nombre qui relie les deux grandeurs proportionnelles.</li>
+                                <li>Exemple : Si y est proportionnel à x, alors y = kx où k est le coefficient de proportionnalité.</li>
+                            </ul>
+                            <h3>Proportionnalité Inverse</h3>
+                            <ul>
+                                <li>Définition : Deux grandeurs sont proportionnelles inversement si leur produit est constant.</li>
+                                <li>Exemple : La vitesse et le temps sont proportionnels inversement si la distance est constante. Si la vitesse double, le temps est réduit de moitié.</li>
+                            </ul>
+                            <h3>Pourcentages</h3>
+                            <ul>
+                                <li>Définition : Un pourcentage est une proportion exprimée sur 100.</li>
+                                <li>Calcul : Pour calculer 15 % de 200, multipliez 200 par 0,15, ce qui donne 30.</li>
+                                <li>Applications : Remises, taxes, augmentations et diminutions.</li>
+                            </ul>
+                            <h3>Résolution de Problèmes de Proportionnalité</h3>
+                            <ul>
+                                <li>Mise en Place de Proportions : Identifier les grandeurs proportionnelles et écrire l'équation de proportionnalité.</li>
+                                <li>Utilisation de Tables de Proportionnalité : Compléter ou utiliser une table pour trouver la valeur manquante.</li>
+                                <li>Applications Pratiques : Conversion d'unités, calcul de coûts, préparation de recettes.</li>
+                            </ul>
+                        `;
+                        break;
+                    case "6":
+                        coursHTML = `
+                            <h2>Statistiques et Probabilités</h2>
+                            <h3>Introduction</h3>
+                            <p>Les statistiques et les probabilités sont utilisées pour analyser des données et mesurer les chances d'événements. Elles permettent de prendre des décisions éclairées basées sur des données numériques.</p>
+                            <h3>Statistiques</h3>
+                            <h4>Moyenne</h4>
+                            <p>La moyenne est obtenue en additionnant toutes les valeurs et en divisant par le nombre de valeurs. Elle représente la valeur centrale d'un ensemble de données.</p>
+                            <h4>Médiane</h4>
+                            <p>La médiane est la valeur centrale d'une série ordonnée. Si le nombre de valeurs est pair, la médiane est la moyenne des deux valeurs centrales.</p>
+                            <h4>Mode</h4>
+                            <p>Le mode est la valeur qui apparaît le plus fréquemment dans un ensemble de données.</p>
+                            <h4>Étendue</h4>
+                            <p>L'étendue est la différence entre la valeur maximale et la valeur minimale d'un ensemble de données.</p>
+                            <h3>Probabilités</h3>
+                            <h4>Définition</h4>
+                            <p>La probabilité d'un événement est la mesure de la chance qu'il se produise, souvent exprimée entre 0 (impossible) et 1 (certain).</p>
+                            <h4>Calcul des Probabilités</h4>
+                            <ul>
+                                <li>Probabilité Simple : P(A) = Nombre de cas favorables / Nombre total de cas possibles.</li>
+                                <li>Probabilité Combinée : Pour des événements indépendants, P(A et B) = P(A) × P(B).</li>
+                                <li>Probabilité Complémentaire : P(A') = 1 - P(A).</li>
+                            </ul>
+                            <h4>Applications des Probabilités</h4>
+                            <ul>
+                                <li>Lancer de Dés : Calculer la probabilité d'obtenir un nombre pair.</li>
+                                <li>Tirage de Cartes : Calculer la probabilité de tirer une carte spécifique.</li>
+                                <li>Jeux de Hasard : Évaluer les chances de gagner à un jeu.</li>
+                            </ul>
+                            <h3>Collecte et Analyse de Données</h3>
+                            <ul>
+                                <li>Enquêtes : Recueillir des données auprès d'un échantillon.</li>
+                                <li>Graphiques : Utiliser des diagrammes en barres, histogrammes, et diagrammes circulaires pour représenter visuellement les données.</li>
+                                <li>Interprétation : Analyser les graphiques et les statistiques pour tirer des conclusions.</li>
+                            </ul>
+                        `;
+                        break;
+                }
+                showCours(coursHTML);
+            }
+
+            function handleExercicesButtonClick() {
+                const selectedChapter = chapterSelect.value;
+                let simpleExercises = [];
+                let complexExercises = [];
+
+                switch (selectedChapter) {
+                    case "1":
+                        simpleExercises = [
+                            'Placer les nombres suivants sur une droite graduée : -5, 3, -2, 7, -8.\n\nExplication : Utilisez une droite graduée pour repérer chaque nombre en partant de zéro, les négatifs à gauche et les positifs à droite.',
+                            'Calculer : (-3) + 5.\n\nExplication : Commencez à -3 sur une droite graduée et avancez de 5 unités vers la droite, le résultat est +2.',
+                            'Quel est le plus grand entre -4 et 2 ?\n\nExplication : 2 est à droite de -4 sur la droite graduée, donc 2 est plus grand.',
+                            'Effectuer : (-8) + (-3).\n\nExplication : Additionner deux nombres négatifs revient à additionner leur valeur absolue et ajouter un signe négatif : -11.',
+                            'Résoudre : (-6) ÷ 3.\n\nExplication : Le résultat est -2, car un nombre négatif divisé par un positif donne un négatif.'
+                        ];
+                        complexExercises = [
+                            'Résoudre le système d\'équations suivant :\n3x + 2y = 12\nx - y = 3\n\nExplication : Multipliez la seconde équation par 2 et additionnez aux deux équations pour éliminer y. Cela donne 5x = 18. Donc, x = 18 / 5 = 3,6. Ensuite, substituez x dans la seconde équation : 3,6 - y = 3, donc y = 0,6.',
+                            'Calculer la valeur absolue de |-7 + 4|.\n\nExplication : |-7 + 4| = |-3| = 3. La valeur absolue d\'un nombre représente sa distance par rapport à zéro, sans tenir compte du signe.',
+                            'Trouver le produit de (-4) × (-5).\n\nExplication : Le produit de deux nombres négatifs est positif. Donc, (-4) × (-5) = 20.',
+                            'Résoudre l\'équation : 2x - 7 = 13.\n\nExplication : Ajoutez 7 des deux côtés pour obtenir 2x = 20, puis divisez par 2 pour isoler x. Donc, x = 10.',
+                            'Simplifier : (-9) + (+6) - (-3).\n\nExplication : (-9) + 6 + 3 = 0. En additionnant les termes, les signes négatifs et positifs se compensent.'
+                        ];
+                        break;
+                    case "2":
+                        simpleExercises = [
+                            'Simplifier : 18/24.\n\nExplication : Le PGCD de 18 et 24 est 6. Divisez le numérateur et le dénominateur par 6 pour obtenir 3/4.',
+                            'Effectuer : 3/4 + 2/5.\n\nExplication : Trouvez un dénominateur commun, qui est 20. Convertissez les fractions : 3/4 = 15/20 et 2/5 = 8/20. Ensuite, additionnez les numérateurs : 15 + 8 = 23. Donc, 23/20.',
+                            'Convertir la fraction 5/8 en nombre décimal.\n\nExplication : Divisez le numérateur par le dénominateur : 5 ÷ 8 = 0,625.',
+                            'Soustraire : 5/6 - 1/3.\n\nExplication : Convertissez 1/3 en 2/6 pour avoir le même dénominateur. Ensuite, soustrayez les numérateurs : 5 - 2 = 3. Donc, 3/6 = 1/2 après simplification.',
+                            'Multiplier : (4/5) × (10/3).\n\nExplication : Multipliez les numérateurs et les dénominateurs : (4 × 10) / (5 × 3) = 40/15. Simplifiez en divisant par 5 : 8/3.'
+                        ];
+                        complexExercises = [
+                            'Résoudre l\'équation : (2/3)x - 5 = 1/3.\n\nExplication : Ajoutez 5 des deux côtés pour obtenir (2/3)x = 5 + 1/3 = 16/3. Puis, multipliez par 3/2 pour isoler x : x = (16/3) × (3/2) = 8.',
+                            'Simplifier l\'expression : (4/5 ÷ 2/3) + (3/4 × 16/9).\n\nExplication : (4/5 ÷ 2/3) = (4/5) × (3/2) = 12/10 = 6/5. (3/4 × 16/9) = 48/36 = 4/3. Ensuite, additionnez les fractions : 6/5 + 4/3 = 38/15.',
+                            'Convertir 7/12 en pourcentage.\n\nExplication : (7 ÷ 12) × 100 ≈ 58,33%.',
+                            'Trouver le PGCD de 48 et 180.\n\nExplication : Les diviseurs communs de 48 et 180 sont 1, 2, 3, 4, 6, 12. Le plus grand est 12.',
+                            'Résoudre : (5/6)x = 15.\n\nExplication : Multipliez les deux côtés par 6/5 pour isoler x : x = 15 × (6/5) = 18.'
+                        ];
+                        break;
+                    case "3":
+                        simpleExercises = [
+                            'Réduire l\'expression suivante : (3x +4 -2x +5).\n\nExplication : Regroupez les termes semblables : 3x - 2x = x et 4 + 5 = 9. Donc, x + 9.',
+                            'Développer l\'expression suivante : (2(x+3)-4).\n\nExplication : Distribuez le 2 : 2x + 6 - 4 = 2x + 2.',
+                            'Résoudre l\'équation suivante : 5x - 3 = 12.\n\nExplication : Ajoutez 3 des deux côtés : 5x = 15. Puis, divisez par 5 : x = 3.',
+                            'Réduire l\'expression suivante : 4y - 7 + 2y + 3.\n\nExplication : Regroupez les termes semblables : 4y + 2y = 6y et -7 + 3 = -4. Donc, 6y - 4.',
+                            'Développer l\'expression suivante : 3(2x - 5) + 4.\n\nExplication : Distribuez le 3 : 6x - 15 + 4 = 6x - 11.'
+                        ];
+                        complexExercises = [
+                            'Factoriser l\'expression suivante : 6x² - 9x.\n\nExplication : Trouvez le PGCD des termes : 3x. Factorisez : 3x(2x - 3).',
+                            'Résoudre l\'équation quadratique : x² - 5x + 6 = 0.\n\nExplication : Factorisez l\'équation : (x - 2)(x - 3) = 0. Donc, x = 2 ou x = 3.',
+                            'Simplifier : (x² - 9) ÷ (x - 3).\n\nExplication : Factorisez le numérateur : (x - 3)(x + 3) ÷ (x - 3) = x + 3 (pour x ≠ 3).',
+                            'Résoudre le système d\'équations suivant :\n2x + y = 10\nx - y = 2\n\nExplication : Ajoutez les deux équations : 3x = 12. Donc, x = 4. Substituez x dans la seconde équation : 4 - y = 2, donc y = 2.',
+                            'Développer et simplifier : (x + 2)(x - 5).\n\nExplication : Utilisez la méthode FOIL : x² - 5x + 2x - 10 = x² - 3x - 10.'
+                        ];
+                        break;
+                    case "4":
+                        simpleExercises = [
+                            'Construire un triangle équilatéral de côté cinq centimètres.\n\nExplication : Utilisez un compas pour tracer trois côtés égaux de 5 cm chacun, formant ainsi un triangle équilatéral.',
+                            'Calculer l\'aire d\'un rectangle mesurant huit centimètres par cinq centimètres.\n\nExplication : Aire = longueur × largeur = 8 cm × 5 cm = 40 cm².',
+                            'Identifier les axes de symétrie d\'un carré.\n\nExplication : Un carré possède quatre axes de symétrie : deux diagonales et deux médiatrices des côtés opposés.',
+                            'Tracer la médiatrice d’un segment mesurant dix centimètres.\n\nExplication : Utilisez un compas pour tracer des arcs de cercle de même rayon depuis les extrémités du segment. La médiatrice est la droite perpendiculaire passant par le point d\'intersection des arcs.',
+                            'Calculer le périmètre d’un triangle ayant des côtés mesurant six centimètres, huit centimètres, dix centimètres.\n\nExplication : Périmètre = somme des côtés = 6 cm + 8 cm + 10 cm = 24 cm.'
+                        ];
+                        complexExercises = [
+                            'Calculer la surface d\'un cylindre de rayon 3 cm et de hauteur 5 cm.\n\nExplication : Surface totale = 2πr(h + r) = 2 × 3,14 × 3 × (5 + 3) = 150,72 cm².',
+                            'Déterminer les coordonnées du centre de symétrie d\'un rectangle dont les sommets sont (2,3), (2,7), (6,7), (6,3).\n\nExplication : Moyenne des coordonnées x : (2 + 2 + 6 + 6) / 4 = 4 ; moyenne des coordonnées y : (3 + 7 + 7 + 3) / 4 = 5. Donc, le centre est (4,5).',
+                            'Calculer le volume d\'un prisme droit dont la base est un triangle de base 4 cm et de hauteur 3 cm, et la hauteur du prisme est de 10 cm.\n\nExplication : Volume = Aire de la base × hauteur du prisme = (1/2 × 4 × 3) × 10 = 60 cm³.',
+                            'Tracer un cercle de rayon 5 cm et calculer sa circonférence.\n\nExplication : Circonférence = 2πr = 2 × 3,14 × 5 = 31,4 cm.',
+                            'Déterminer l\'aire totale d\'un cube dont chaque arête mesure 4 cm.\n\nExplication : Aire totale = 6 × (côté)² = 6 × (4 cm)² = 96 cm².'
+                        ];
+                        break;
+                    case "5":
+                        simpleExercises = [
+                            'Dans une recette il faut deux cents grammes de farine pour trois œufs. Combien faut-il pour neuf œufs ?\n\nExplication : Utilisez une proportion : (200 g / 3 œufs) × 9 œufs = 600 g de farine.',
+                            'Calculer quinze pour cent de deux cent quarante euros.\n\nExplication : 15% de 240 € = (15 / 100) × 240 = 36 €.',
+                            'Un article coûte cinquante euros. Il bénéficie d’une réduction de vingt pour cent. Quel sera son nouveau prix ?\n\nExplication : Réduction = 20% de 50 € = 10 €. Nouveau prix = 50 € - 10 € = 40 €.',
+                            'Une voiture parcourt deux cent dix kilomètres en trois heures. Quelle distance parcourra-t-elle en cinq heures à vitesse constante ?\n\nExplication : Vitesse = 210 km / 3 h = 70 km/h. Distance en 5 h = 70 km/h × 5 h = 350 km.',
+                            'Compléter le tableau suivant qui présente une relation de proportionnalité : [2→6], [3→9], [5→?].\n\nExplication : Le coefficient de proportionnalité est 3 (6/2 = 3 et 9/3 = 3). Donc, pour 5 : 5 × 3 = 15.'
+                        ];
+                        complexExercises = [
+                            'Résoudre le problème suivant : Si le prix de 5 articles est de 75 euros, quel est le prix d\'un article ? Utilisez une proportion.\n\nExplication : Prix unitaire = 75 € / 5 = 15 € par article.',
+                            'Un rectangle a une longueur de 12 cm et une largeur proportionnelle de 8 cm. Si la longueur augmente de 50%, quelle est la nouvelle largeur pour maintenir la proportionnalité ?\n\nExplication : Nouvelle longueur = 12 cm + 50% de 12 cm = 18 cm. Maintenir la proportionnalité : (nouvelle longueur / ancienne longueur) = (nouvelle largeur / ancienne largeur). Donc, 18 / 12 = nouvelle largeur / 8 → nouvelle largeur = (18 / 12) × 8 = 12 cm.',
+                            'Si le prix de 3 stylos est de 9 euros, combien coûteront 7 stylos au même tarif ?\n\nExplication : Prix unitaire = 9 € / 3 = 3 € par stylo. Donc, 7 stylos coûtent 3 € × 7 = 21 €.',
+                            'Une usine produit 240 pièces en 6 heures. Combien de pièces produira-t-elle en 10 heures au même rythme ?\n\nExplication : Taux de production = 240 pièces / 6 h = 40 pièces par heure. Donc, en 10 heures : 40 pièces/h × 10 h = 400 pièces.',
+                            'Une bouteille de jus coûte 2,50 euros. Combien coûteront 8 bouteilles ? Utilisez une proportion.\n\nExplication : Coût total = 2,50 € × 8 = 20 €.'
+                        ];
+                        break;
+                    case "6":
+                        simpleExercises = [
+                            'Calculer la moyenne des notes suivantes : [12], [15], [8], [17], [13].\n\nExplication : Moyenne = (12 + 15 + 8 + 17 + 13) / 5 = 65 / 5 = 13.',
+                            'Trouver la médiane parmi cette série : [3], [7], [8], [9], [11], [15].\n\nExplication : Série ordonnée = [3], [7], [8], [9], [11], [15]. Médiane = (8 + 9) / 2 = 8,5.',
+                            'Dans un sac il y a trois billes rouges, deux billes bleues, cinq billes vertes ; Quelle probabilité y a-t-il d’en tirer une bleue ?\n\nExplication : Nombre total de billes = 3 + 2 + 5 = 10. Nombre de billes bleues = 2. Donc, P(bille bleue) = 2 / 10 = 1/5.',
+                            'Calculer l’étendue parmi cette série : [5], [8], [12], [15], [18], [20].\n\nExplication : Étendue = valeur maximale - valeur minimale = 20 - 5 = 15.',
+                            'Dans un groupe constitué de trente élèves, dix-huit sont des filles ; Quel sera le pourcentage des garçons ?\n\nExplication : Nombre de garçons = 30 - 18 = 12. Pourcentage des garçons = (12 / 30) × 100 = 40%.'
+                        ];
+                        complexExercises = [
+                            'Si la moyenne de 5 élèves est de 14, quelle somme de notes doit obtenir le 6ème élève pour que la nouvelle moyenne soit de 15 ?\n\nExplication : Total initial = 5 × 14 = 70. Nouveau total souhaité = 6 × 15 = 90. Donc, le 6ème élève doit obtenir 90 - 70 = 20.',
+                            'Une classe a 20 élèves. 12 d’entre eux ont réussi l’examen. Quelle est la probabilité qu\'un élève choisi au hasard ait réussi ? Exprimez en pourcentage.\n\nExplication : P(réussite) = 12 / 20 = 0,6 = 60%.',
+                            'Calculer la variance des notes suivantes : [10], [12], [14], [16], [18].\n\nExplication : Moyenne = 14. Variance = [(10-14)² + (12-14)² + (14-14)² + (16-14)² + (18-14)²] / 5 = [16 + 4 + 0 + 4 + 16] / 5 = 40 / 5 = 8.',
+                            'Dans une urne, il y a 5 boules rouges, 3 boules bleues et 2 boules vertes. Quelle est la probabilité de tirer une boule rouge ou verte ?\n\nExplication : Nombre total de boules = 5 + 3 + 2 = 10. Nombre de boules rouges ou vertes = 5 + 2 = 7. Donc, P(rouge ou verte) = 7 / 10 = 0,7 = 70%.',
+                            'Une entreprise a enregistré les ventes suivantes sur 5 mois : [200, 250, 225, 275, 300]. Calculer la moyenne et l\'étendue des ventes.\n\nExplication : Moyenne = (200 + 250 + 225 + 275 + 300) / 5 = 1250 / 5 = 250. Étendue = 300 - 200 = 100.'
+                        ];
+                        break;
+                }
+                showExercices(simpleExercises, complexExercises);
+            }
+
+            chapterSelect.addEventListener('change', handleSelectionChange);
+            coursButton.addEventListener('click', handleCoursButtonClick);
+            exercicesButton.addEventListener('click', handleExercicesButtonClick);
+
+            // Appel initial pour désactiver les boutons
+            handleSelectionChange();
+        });
+    </script>
+</body>
+</html>
